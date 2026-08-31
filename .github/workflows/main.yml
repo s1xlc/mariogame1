@@ -11,25 +11,16 @@ jobs:
 
     steps:
 
-      # --------------------------------
-      # 1. Download the GitHub repository
-      # --------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
 
-      # --------------------------------
-      # 2. Set up Python
-      # --------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
 
-      # --------------------------------
-      # 3. Install Linux dependencies
-      # --------------------------------
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -53,9 +44,6 @@ jobs:
             liblzma-dev
 
 
-      # --------------------------------
-      # 4. Set Java 17
-      # --------------------------------
       - name: Set Java 17
         run: |
           echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
@@ -65,15 +53,7 @@ jobs:
           javac -version
 
 
-      # --------------------------------
-      # 5. Install Cython and Buildozer
-      #
-      # IMPORTANT:
-      # Do NOT use a virtual environment.
-      # Buildozer/python-for-android uses pip --user
-      # internally, which fails inside a venv.
-      # --------------------------------
-      - name: Install Python build tools
+      - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
@@ -85,30 +65,41 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
 
-      # --------------------------------
-      # 6. Verify installation
-      # --------------------------------
-      - name: Check build tools
+      - name: Check Buildozer
         run: |
           python --version
           cython --version
           buildozer --version
-          which python
-          which cython
-          which buildozer
 
 
-      # --------------------------------
-      # 7. Build APK
-      # --------------------------------
+      # IMPORTANT:
+      # Accept Android SDK licenses before Buildozer starts.
+      - name: Accept Android SDK licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+
+      # Install the SDK components Buildozer needs.
+      - name: Install Android SDK components
+        run: |
+          yes | sdkmanager \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;35.0.0"
+
+
+      # Remove any previous Buildozer cache.
+      - name: Clean Buildozer
+        run: |
+          rm -rf .buildozer
+          rm -rf bin
+
+
       - name: Build Android APK
         run: |
           buildozer -v android debug
 
 
-      # --------------------------------
-      # 8. Upload APK
-      # --------------------------------
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
