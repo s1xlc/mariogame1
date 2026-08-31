@@ -7,21 +7,21 @@ on:
     branches: [ main ]
 
 jobs:
-    build:
-      runs-on: ubuntu-22.04
-      
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-  
-        - name: Build with Buildozer
-          uses: kivy/buildozer-action@master
-          id: buildozer
-          with:
-            command: buildozer android debug
-  
-        - name: Upload APK artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: package
-            path: bin/*.apk
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: bin/*.apk
