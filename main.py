@@ -28,10 +28,27 @@ from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, Line, Tri
 Window.clearcolor = (0.05, 0.05, 0.1, 1)
 
 # -----------------------------------------------------------------------------
+# ASSET PATHS
+# Keep the original game graphics/audio exactly as supplied.  Assets may live
+# in .assets/ during development or be copied to the app root by the Android
+# build workflow.
+# -----------------------------------------------------------------------------
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSET_DIR = os.path.join(APP_DIR, '.assets')
+
+
+def asset_path(filename):
+    bundled = os.path.join(ASSET_DIR, filename)
+    if os.path.exists(bundled):
+        return bundled
+    return os.path.join(APP_DIR, filename)
+
+
+# -----------------------------------------------------------------------------
 # AUDIO GENERATOR & SOUND MANAGER
 # -----------------------------------------------------------------------------
 def generate_enhanced_audio():
-    if not os.path.exists("click.wav"):
+    if not os.path.exists(asset_path("click.wav")):
         try:
             with wave.open("click.wav", "w") as f:
                 f.setnchannels(1)
@@ -47,7 +64,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("jump.wav"):
+    if not os.path.exists(asset_path("jump.wav")):
         try:
             with wave.open("jump.wav", "w") as f:
                 f.setnchannels(1)
@@ -63,7 +80,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("squish.wav"):
+    if not os.path.exists(asset_path("squish.wav")):
         try:
             with wave.open("squish.wav", "w") as f:
                 f.setnchannels(1)
@@ -79,7 +96,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("coin.wav"):
+    if not os.path.exists(asset_path("coin.wav")):
         try:
             with wave.open("coin.wav", "w") as f:
                 f.setnchannels(1)
@@ -98,7 +115,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("heartpop.wav"):
+    if not os.path.exists(asset_path("heartpop.wav")):
         try:
             with wave.open("heartpop.wav", "w") as f:
                 f.setnchannels(1)
@@ -117,7 +134,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("gameover.wav"):
+    if not os.path.exists(asset_path("gameover.wav")):
         try:
             with wave.open("gameover.wav", "w") as f:
                 f.setnchannels(1)
@@ -134,7 +151,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("victory.wav"):
+    if not os.path.exists(asset_path("victory.wav")):
         try:
             with wave.open("victory.wav", "w") as f:
                 f.setnchannels(1)
@@ -151,7 +168,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("scream.wav"):
+    if not os.path.exists(asset_path("scream.wav")):
         try:
             with wave.open("scream.wav", "w") as f:
                 f.setnchannels(1)
@@ -168,7 +185,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("firework.wav"):
+    if not os.path.exists(asset_path("firework.wav")):
         try:
             with wave.open("firework.wav", "w") as f:
                 f.setnchannels(1)
@@ -188,7 +205,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("rain.wav"):
+    if not os.path.exists(asset_path("rain.wav")):
         try:
             with wave.open("rain.wav", "w") as f:
                 f.setnchannels(1)
@@ -202,7 +219,7 @@ def generate_enhanced_audio():
         except Exception:
             pass
 
-    if not os.path.exists("thunder.wav"):
+    if not os.path.exists(asset_path("thunder.wav")):
         try:
             with wave.open("thunder.wav", "w") as f:
                 f.setnchannels(1)
@@ -243,50 +260,50 @@ class SoundManager:
 
     @classmethod
     def play_click(cls):
-        cls._play_sfx("click.wav")
+        cls._play_sfx(asset_path("click.wav"))
 
     @classmethod
     def play_jump(cls):
-        cls._play_sfx("jump.wav")
+        cls._play_sfx(asset_path("jump.wav"))
 
     @classmethod
     def play_squish(cls):
-        cls._play_sfx("squish.wav")
+        cls._play_sfx(asset_path("squish.wav"))
 
     @classmethod
     def play_coin(cls):
-        cls._play_sfx("coin.wav")
+        cls._play_sfx(asset_path("coin.wav"))
 
     @classmethod
     def play_heartpop(cls):
-        cls._play_sfx("heartpop.wav")
+        cls._play_sfx(asset_path("heartpop.wav"))
 
     @classmethod
     def play_gameover(cls):
-        cls._play_sfx("gameover.wav")
+        cls._play_sfx(asset_path("gameover.wav"))
 
     @classmethod
     def play_victory(cls):
-        cls._play_sfx("victory.wav")
+        cls._play_sfx(asset_path("victory.wav"))
 
     @classmethod
     def play_scream(cls):
-        cls._play_sfx("scream.wav")
+        cls._play_sfx(asset_path("scream.wav"))
 
     @classmethod
     def play_firework(cls):
-        cls._play_sfx("firework.wav")
+        cls._play_sfx(asset_path("firework.wav"))
 
     @classmethod
     def play_thunder(cls):
-        cls._play_sfx("thunder.wav")
+        cls._play_sfx(asset_path("thunder.wav"))
 
     @classmethod
     def start_bgm(cls, level_num=1):
         audio_file = None
         for ext in [".wav", ".mp3", ".ogg"]:
-            if os.path.exists("bgmusic" + ext):
-                audio_file = "bgmusic" + ext
+            if os.path.exists(asset_path("bgmusic" + ext)):
+                audio_file = asset_path("bgmusic" + ext)
                 break
 
         if audio_file:
@@ -300,8 +317,8 @@ class SoundManager:
                 cls.bgm_sound.play()
 
         if level_num == 5:
-            if not cls.rain_sound and os.path.exists("rain.wav"):
-                cls.rain_sound = SoundLoader.load("rain.wav")
+            if not cls.rain_sound and os.path.exists(asset_path("rain.wav")):
+                cls.rain_sound = SoundLoader.load(asset_path("rain.wav"))
             if cls.rain_sound:
                 cls.rain_sound.loop = True
                 cls.rain_sound.volume = cls.master_vol * cls.sfx_vol * 0.8
@@ -504,9 +521,9 @@ class GameEngine(Widget):
             'boss': '5boss.png'
         }
         for key, fname in model_files.items():
-            if os.path.exists(fname):
+            if os.path.exists(asset_path(fname)):
                 try:
-                    self.textures[key] = Image(source=fname).texture
+                    self.textures[key] = Image(source=asset_path(fname)).texture
                 except Exception:
                     self.textures[key] = None
             else:
@@ -1504,9 +1521,9 @@ class MarioGameApp(App):
         self.polyester_timers = []
         self.spawned_videos = []
 
-        if os.path.exists("background.jpg"):
+        if os.path.exists(asset_path("background.jpg")):
             try:
-                self.bg_texture = Image(source="background.jpg").texture
+                self.bg_texture = Image(source=asset_path("background.jpg")).texture
             except Exception:
                 pass
 
@@ -1522,8 +1539,8 @@ class MarioGameApp(App):
 
         load_box = BoxLayout(orientation='vertical', size_hint=(None, None), size=(260, 260), spacing=15, pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
-        if os.path.exists("5boss.png"):
-            img_boss = Image(source="5boss.png", size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
+        if os.path.exists(asset_path("5boss.png")):
+            img_boss = Image(source=asset_path("5boss.png"), size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
             load_box.add_widget(img_boss)
         else:
             lbl_fallback = Label(text="[5boss.png missing]", font_size='14sp', color=(1,1,1,1), size_hint=(None,None), size=(140,40))
@@ -1756,7 +1773,7 @@ class MarioGameApp(App):
         self.spawned_videos.clear()
 
     def spawn_polyester_video(self):
-        if not os.path.exists("polyester.mp4"):
+        if not os.path.exists(asset_path("polyester.mp4")):
             return
 
         vw, vh = 320, 240
@@ -1770,7 +1787,7 @@ class MarioGameApp(App):
         rand_y = random.randint(20, max_y) if max_y > 20 else 50
         angle = random.randint(-45, 45)
 
-        vid_widget = RotatedVideoWidget(source="polyester.mp4", angle=angle, volume=0.0, size_hint=(None, None), size=(vw, vh), pos=(rand_x, rand_y))
+        vid_widget = RotatedVideoWidget(source=asset_path("polyester.mp4"), angle=angle, volume=0.0, size_hint=(None, None), size=(vw, vh), pos=(rand_x, rand_y))
         
         self.root_layout.add_widget(vid_widget)
         self.spawned_videos.append(vid_widget)
@@ -1785,7 +1802,7 @@ class MarioGameApp(App):
         self.clear_polyester_videos()
         self.root_layout.clear_widgets()
 
-        if not os.path.exists("jumpscare.mp4"):
+        if not os.path.exists(asset_path("jumpscare.mp4")):
             self.show_pipe_dide_popup(is_pipe=False)
             return
 
@@ -1814,7 +1831,7 @@ class MarioGameApp(App):
             popup.open()
 
         jumpscare_widget = RotatedVideoWidget(
-            source="jumpscare.mp4", 
+            source=asset_path("jumpscare.mp4"), 
             angle=0, 
             volume=1.0, 
             eos_action='stop', 
@@ -1829,8 +1846,8 @@ class MarioGameApp(App):
         
         content = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
-        if os.path.exists("question.png"):
-            img = Image(source="question.png", size_hint=(None, None), size=(120, 120), pos_hint={'center_x': 0.5})
+        if os.path.exists(asset_path("question.png")):
+            img = Image(source=asset_path("question.png"), size_hint=(None, None), size=(120, 120), pos_hint={'center_x': 0.5})
             content.add_widget(img)
         
         lbl = Label(text="how you gon die to the void yo", font_size='16sp', bold=True, color=(1, 0.3, 0.3, 1), halign='center')
@@ -1928,8 +1945,8 @@ class MarioGameApp(App):
     def show_syri_thank_you_display(self):
         content = BoxLayout(orientation='vertical', padding=15, spacing=15)
         
-        if os.path.exists( "syri.png"):
-            img_syri = Image(source="syri.png", size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
+        if os.path.exists(asset_path("syri.png")):
+            img_syri = Image(source=asset_path("syri.png"), size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
             content.add_widget(img_syri)
         else:
             fallback_lbl = Label(text="[Image: syri.png]", font_size='14sp', color=(0.7, 0.7, 0.7, 1))
@@ -1966,12 +1983,12 @@ class MarioGameApp(App):
         layout = FloatLayout(size_hint=(1, 1))
         self.root_layout.add_widget(layout)
 
-        if os.path.exists("polyester.mp4"):
+        if os.path.exists(asset_path("polyester.mp4")):
             def on_break_eos():
                 App.get_running_app().stop()
 
             break_widget = RotatedVideoWidget(
-                source="polyester.mp4", 
+                source=asset_path("polyester.mp4"), 
                 angle=0, 
                 volume=1.0, 
                 eos_action='stop', 
