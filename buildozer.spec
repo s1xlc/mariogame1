@@ -1,7 +1,7 @@
 [app]
 
 # Application name
-title = Mario Game
+title = Mario Game NPC
 
 # Package name
 package.name = mariogame
