@@ -14,12 +14,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-
 
       - name: Install system dependencies
         run: |
@@ -32,7 +30,6 @@ jobs:
             openjdk-17-jdk \
             python3-pip \
             python3-dev \
-            python3-venv \
             autoconf \
             libtool \
             pkg-config \
@@ -43,7 +40,6 @@ jobs:
             libssl-dev \
             liblzma-dev
 
-
       - name: Set Java 17
         run: |
           echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> "$GITHUB_ENV"
@@ -52,8 +48,7 @@ jobs:
           java -version
           javac -version
 
-
-      - name: Set Android SDK environment
+      - name: Set Android SDK
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> "$GITHUB_ENV"
@@ -61,56 +56,28 @@ jobs:
           echo "/usr/local/lib/android/sdk/platform-tools" >> "$GITHUB_PATH"
           echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
 
-
-      - name: Find Android SDK tools
+      - name: Check Android SDK
         run: |
-          echo "Android SDK:"
-          echo "$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME"
 
-          echo "Searching for sdkmanager..."
-          find /usr/local/lib/android/sdk -name sdkmanager -type f 2>/dev/null || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
-          echo "Searching for sdkmanager in common locations..."
-          find /opt/android-sdk /opt/android /usr/local/lib/android -name sdkmanager -type f 2>/dev/null || true
-
-
-      - name: Install Android command line tools if needed
-        run: |
-          SDK="$ANDROID_HOME"
-
-          if [ ! -x "$SDK/cmdline-tools/latest/bin/sdkmanager" ]; then
-            echo "sdkmanager is missing. Installing Android command line tools..."
-
-            mkdir -p "$SDK/cmdline-tools"
-
-            cd /tmp
-
-            wget -q https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
-
-            rm -rf /tmp/cmdline-tools
-            mkdir -p /tmp/cmdline-tools
-
-            unzip -q commandlinetools-linux-13114758_latest.zip \
-              -d /tmp/cmdline-tools
-
-            rm -rf "$SDK/cmdline-tools/latest"
-
-            mkdir -p "$SDK/cmdline-tools/latest"
-
-            cp -r /tmp/cmdline-tools/cmdline-tools/* \
-              "$SDK/cmdline-tools/latest/"
+          if [ ! -f "$SDKMANAGER" ]; then
+            echo "ERROR: sdkmanager was not found."
+            find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null || true
+            exit 1
           fi
 
-          chmod +x "$SDK/cmdline-tools/latest/bin/sdkmanager"
+          echo "sdkmanager found:"
+          ls -l "$SDKMANAGER"
 
-          echo "sdkmanager location:"
-          "$SDK/cmdline-tools/latest/bin/sdkmanager" --version
-
+          "$SDKMANAGER" --version
 
       - name: Accept Android SDK licenses
         run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
+          yes | "$SDKMANAGER" --licenses || true
 
       - name: Install Android SDK components
         run: |
@@ -120,8 +87,7 @@ jobs:
           "$SDKMANAGER" "platforms;android-33"
           "$SDKMANAGER" "build-tools;35.0.0"
 
-
-      - name: Install Buildozer and Cython
+      - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
@@ -132,30 +98,20 @@ jobs:
 
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-
-      - name: Check build tools
+      - name: Check Buildozer
         run: |
           python --version
           cython --version
           buildozer --version
 
-          echo "Android SDK:"
-          echo "$ANDROID_HOME"
-
-          echo "SDK manager:"
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
-
-
-      - name: Clean previous Buildozer files
+      - name: Clean Buildozer
         run: |
           rm -rf .buildozer
           rm -rf bin
 
-
       - name: Build Android APK
         run: |
           buildozer -v android debug
-
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
