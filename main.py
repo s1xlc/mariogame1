@@ -357,7 +357,7 @@ class StylizedMenuButton(Button):
         self.background_normal = ''
         self.color = (1, 1, 1, 1)
         self.bold = True
-        self.font_size = '22sp'
+        self.font_size = '28sp'
         self.bind(pos=self.update_canvas, size=self.update_canvas)
 
     def update_canvas(self, *args):
@@ -391,7 +391,7 @@ class TouchControlButton(Button):
             Ellipse(pos=(cx - dim * 0.48, cy - dim * 0.52), size=(dim * 0.96, dim * 0.96))
             
             Color(1, 1, 1, 0.85)
-            Line(circle=(cx, cy, dim * 0.46), width=2.5)
+            Line(circle=(cx, cy, dim * 0.46), width=3)
 
             Color(1, 1, 1, 0.95)
             t = self.raw_text.upper()
@@ -415,7 +415,7 @@ class GameHUD(Widget):
         self.lives = 3
         self.coins = 0
         self.size_hint = (1, None)
-        self.height = 70
+        self.height = 90
         self.pos_hint = {'top': 1, 'x': 0}
         self.bind(pos=self.draw_hud, size=self.draw_hud)
 
@@ -426,17 +426,17 @@ class GameHUD(Widget):
 
     def draw_hud(self, *args):
         self.canvas.clear()
-        hud_top = Window.height - 10
+        hud_top = Window.height - 15
         with self.canvas:
             for i in range(3):
-                h_x = Window.width - 140 + (i * 38)
+                h_x = Window.width - 180 + (i * 48)
                 if i < self.lives:
                     Color(0.95, 0.15, 0.15, 1)
                 else:
                     Color(0.25, 0.25, 0.25, 0.6)
-                Ellipse(pos=(h_x, hud_top - 20), size=(14, 14))
-                Ellipse(pos=(h_x + 12, hud_top - 20), size=(14, 14))
-                Rectangle(pos=(h_x + 3, hud_top - 32), size=(20, 15))
+                Ellipse(pos=(h_x, hud_top - 26), size=(18, 18))
+                Ellipse(pos=(h_x + 16, hud_top - 26), size=(18, 18))
+                Rectangle(pos=(h_x + 4, hud_top - 42), size=(26, 20))
 
 # -----------------------------------------------------------------------------
 # GAME ENGINE & ANIMATION GRAPHICS
@@ -1537,16 +1537,16 @@ class MarioGameApp(App):
             Color(0.02, 0.02, 0.05, 1)
             Rectangle(pos=(0, 0), size=Window.size)
 
-        load_box = BoxLayout(orientation='vertical', size_hint=(None, None), size=(260, 260), spacing=15, pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        load_box = BoxLayout(orientation='vertical', size_hint=(None, None), size=(360, 360), spacing=20, pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         if os.path.exists(asset_path("5boss.png")):
-            img_boss = Image(source=asset_path("5boss.png"), size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
+            img_boss = Image(source=asset_path("5boss.png"), size_hint=(None, None), size=(180, 180), pos_hint={'center_x': 0.5})
             load_box.add_widget(img_boss)
         else:
-            lbl_fallback = Label(text="[5boss.png missing]", font_size='14sp', color=(1,1,1,1), size_hint=(None,None), size=(140,40))
+            lbl_fallback = Label(text="[5boss.png missing]", font_size='18sp', color=(1,1,1,1), size_hint=(None,None), size=(180,50))
             load_box.add_widget(lbl_fallback)
 
-        lbl_studio = Label(text="syriSTUDIO", font_size='24sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(260, 40), pos_hint={'center_x': 0.5})
+        lbl_studio = Label(text="syriSTUDIO", font_size='34sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(360, 50), pos_hint={'center_x': 0.5})
         load_box.add_widget(lbl_studio)
 
         self.root_layout.add_widget(load_box)
@@ -1563,18 +1563,18 @@ class MarioGameApp(App):
         self.root_layout.clear_widgets()
         self.apply_background()
 
-        menu_box = BoxLayout(orientation='vertical', size_hint=(None, None), size=(280, 310), spacing=14, pos_hint={'center_x': 0.5, 'center_y': 0.55})
+        menu_box = BoxLayout(orientation='vertical', size_hint=(None, None), size=(380, 420), spacing=20, pos_hint={'center_x': 0.5, 'center_y': 0.55})
 
-        btn_play = StylizedMenuButton(text="PLAY")
+        btn_play = StylizedMenuButton(text="PLAY", size_hint=(1, None), height=70)
         btn_play.bind(on_press=lambda i: (SoundManager.play_click(), self.load_level(1)))
 
-        btn_levels = StylizedMenuButton(text="LEVELS")
+        btn_levels = StylizedMenuButton(text="LEVELS", size_hint=(1, None), height=70)
         btn_levels.bind(on_press=lambda i: (SoundManager.play_click(), self.show_levels_menu(i)))
 
-        btn_settings = StylizedMenuButton(text="SETTINGS")
+        btn_settings = StylizedMenuButton(text="SETTINGS", size_hint=(1, None), height=70)
         btn_settings.bind(on_press=lambda i: (SoundManager.play_click(), self.open_settings_menu(i)))
 
-        btn_credits = StylizedMenuButton(text="CREDITS")
+        btn_credits = StylizedMenuButton(text="CREDITS", size_hint=(1, None), height=70)
         btn_credits.bind(on_press=lambda i: (SoundManager.play_click(), self.open_credits_menu(i)))
 
         menu_box.add_widget(btn_play)
@@ -1582,51 +1582,51 @@ class MarioGameApp(App):
         menu_box.add_widget(btn_settings)
         menu_box.add_widget(btn_credits)
 
-        syri_label = Label(text="Made by syri", font_size='26sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(200, 40), pos_hint={'center_x': 0.5, 'center_y': 0.15})
+        syri_label = Label(text="Made by syri", font_size='32sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(300, 50), pos_hint={'center_x': 0.5, 'center_y': 0.15})
 
         self.root_layout.add_widget(menu_box)
         self.root_layout.add_widget(syri_label)
 
     def open_settings_menu(self, instance):
-        content = BoxLayout(orientation='vertical', padding=15, spacing=15)
+        content = BoxLayout(orientation='vertical', padding=25, spacing=20)
 
-        content.add_widget(Label(text="Master Audio", font_size='14sp', bold=True, color=(1, 1, 1, 1)))
-        slider_master = Slider(min=0, max=1, value=SoundManager.master_vol, size_hint_y=None, height=40)
+        content.add_widget(Label(text="Master Audio", font_size='20sp', bold=True, color=(1, 1, 1, 1)))
+        slider_master = Slider(min=0, max=1, value=SoundManager.master_vol, size_hint_y=None, height=60)
         def on_master_change(inst, val):
             SoundManager.master_vol = val
             SoundManager.update_volumes()
         slider_master.bind(value=on_master_change)
         content.add_widget(slider_master)
 
-        content.add_widget(Label(text="BG Music Audio", font_size='14sp', bold=True, color=(1, 1, 1, 1)))
-        slider_bgm = Slider(min=0, max=1, value=SoundManager.bgm_vol, size_hint_y=None, height=40)
+        content.add_widget(Label(text="BG Music Audio", font_size='20sp', bold=True, color=(1, 1, 1, 1)))
+        slider_bgm = Slider(min=0, max=1, value=SoundManager.bgm_vol, size_hint_y=None, height=60)
         def on_bgm_change(inst, val):
             SoundManager.bgm_vol = val
             SoundManager.update_volumes()
         slider_bgm.bind(value=on_bgm_change)
         content.add_widget(slider_bgm)
 
-        content.add_widget(Label(text="SFX Audio", font_size='14sp', bold=True, color=(1, 1, 1, 1)))
-        slider_sfx = Slider(min=0, max=1, value=SoundManager.sfx_vol, size_hint_y=None, height=40)
+        content.add_widget(Label(text="SFX Audio", font_size='20sp', bold=True, color=(1, 1, 1, 1)))
+        slider_sfx = Slider(min=0, max=1, value=SoundManager.sfx_vol, size_hint_y=None, height=60)
         def on_sfx_change(inst, val):
             SoundManager.sfx_vol = val
             SoundManager.update_volumes()
         slider_sfx.bind(value=on_sfx_change)
         content.add_widget(slider_sfx)
 
-        btn_close = StylizedMenuButton(text="BACK")
-        popup = Popup(title="Settings", content=content, size_hint=(None, None), size=(320, 360), auto_dismiss=False)
+        btn_close = StylizedMenuButton(text="BACK", size_hint=(1, None), height=60)
+        popup = Popup(title="Settings", content=content, size_hint=(None, None), size=(460, 500), auto_dismiss=False)
         btn_close.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss()))
         content.add_widget(btn_close)
         
         popup.open()
 
     def open_credits_menu(self, instance):
-        content = BoxLayout(orientation='vertical', padding=20, spacing=20)
+        content = BoxLayout(orientation='vertical', padding=30, spacing=25)
         
         lbl_credit_text = Label(
             text="im syri yes syri is me yes i made it im not gay", 
-            font_size='16sp', 
+            font_size='22sp', 
             bold=True, 
             color=(1, 1, 1, 1), 
             halign='center', 
@@ -1635,8 +1635,8 @@ class MarioGameApp(App):
         lbl_credit_text.bind(size=lambda s, w: setattr(s, 'text_size', w))
         content.add_widget(lbl_credit_text)
 
-        btn_close = StylizedMenuButton(text="BACK")
-        popup = Popup(title="Credits", content=content, size_hint=(None, None), size=(340, 240), auto_dismiss=False)
+        btn_close = StylizedMenuButton(text="BACK", size_hint=(1, None), height=65)
+        popup = Popup(title="Credits", content=content, size_hint=(None, None), size=(460, 320), auto_dismiss=False)
         btn_close.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss()))
         content.add_widget(btn_close)
 
@@ -1646,7 +1646,7 @@ class MarioGameApp(App):
         self.root_layout.clear_widgets()
         self.apply_background()
 
-        grid = GridLayout(cols=3, size_hint=(None, None), size=(420, 240), spacing=15, pos_hint={'center_x': 0.5, 'center_y': 0.55})
+        grid = GridLayout(cols=3, size_hint=(None, None), size=(540, 320), spacing=20, pos_hint={'center_x': 0.5, 'center_y': 0.55})
 
         for i in range(1, 6):
             btn = StylizedMenuButton(text=f"LEVEL {i}")
@@ -1656,7 +1656,7 @@ class MarioGameApp(App):
                 btn.opacity = 0.5
             grid.add_widget(btn)
 
-        btn_back = StylizedMenuButton(text="BACK", size_hint=(None, None), size=(180, 50), pos_hint={'center_x': 0.5, 'center_y': 0.2})
+        btn_back = StylizedMenuButton(text="BACK", size_hint=(None, None), size=(240, 65), pos_hint={'center_x': 0.5, 'center_y': 0.18})
         btn_back.bind(on_press=lambda i: (SoundManager.play_click(), self.show_main_menu()))
 
         self.root_layout.add_widget(grid)
@@ -1674,19 +1674,19 @@ class MarioGameApp(App):
         self.root_layout.add_widget(self.engine)
         self.root_layout.add_widget(self.hud)
 
-        btn_pause = Button(text="||", size_hint=(None, None), size=(45, 45), pos_hint={'x': 0.02, 'top': 0.98}, bold=True)
+        btn_pause = Button(text="||", size_hint=(None, None), size=(65, 65), pos_hint={'x': 0.03, 'top': 0.97}, bold=True, font_size='24sp')
         btn_pause.bind(on_press=lambda i: (SoundManager.play_click(), self.toggle_pause(i)))
         self.root_layout.add_widget(btn_pause)
 
-        self.level_lbl = Label(text=f"LEVEL {level_num}", font_size='22sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(140, 30), pos_hint={'center_x': 0.5, 'top': 0.95})
+        self.level_lbl = Label(text=f"LEVEL {level_num}", font_size='28sp', bold=True, color=(1, 1, 1, 1), size_hint=(None, None), size=(220, 45), pos_hint={'center_x': 0.5, 'top': 0.96})
         self.root_layout.add_widget(self.level_lbl)
 
         if level_num == 5:
-            self.timer_lbl = Label(text="HEADSTART: 5.0s", font_size='18sp', bold=True, color=(1, 0.3, 0.3, 1), size_hint=(None, None), size=(200, 30), pos_hint={'center_x': 0.5, 'top': 0.88})
+            self.timer_lbl = Label(text="HEADSTART: 5.0s", font_size='24sp', bold=True, color=(1, 0.3, 0.3, 1), size_hint=(None, None), size=(300, 45), pos_hint={'center_x': 0.5, 'top': 0.89})
             self.root_layout.add_widget(self.timer_lbl)
             Clock.schedule_interval(self.update_headstart_hud, 0.1)
 
-        self.coin_lbl = Label(text="COINS: 0", font_size='18sp', bold=True, color=(1, 0.85, 0.1, 1), size_hint=(None, None), size=(140, 30), pos_hint={'right': 0.98, 'top': 0.90})
+        self.coin_lbl = Label(text="COINS: 0", font_size='24sp', bold=True, color=(1, 0.85, 0.1, 1), size_hint=(None, None), size=(200, 45), pos_hint={'right': 0.97, 'top': 0.91})
         self.root_layout.add_widget(self.coin_lbl)
 
         self.setup_touch_controls()
@@ -1705,7 +1705,7 @@ class MarioGameApp(App):
         self.coin_lbl.text = f"COINS: {count}"
 
     def setup_touch_controls(self):
-        left_box = BoxLayout(size_hint=(None, None), size=(210, 95), pos_hint={'x': 0.02, 'y': 0.02}, spacing=12)
+        left_box = BoxLayout(size_hint=(None, None), size=(300, 140), pos_hint={'x': 0.03, 'y': 0.03}, spacing=18)
         btn_l = TouchControlButton(text="<")
         btn_l.bind(on_press=lambda i: self.set_key_state('key_left', True))
         btn_l.bind(on_release=lambda i: self.set_key_state('key_left', False))
@@ -1717,7 +1717,7 @@ class MarioGameApp(App):
         left_box.add_widget(btn_l)
         left_box.add_widget(btn_r)
 
-        right_box = BoxLayout(size_hint=(None, None), size=(210, 95), pos_hint={'right': 0.98, 'y': 0.02}, spacing=12)
+        right_box = BoxLayout(size_hint=(None, None), size=(300, 140), pos_hint={'right': 0.97, 'y': 0.03}, spacing=18)
         btn_c = TouchControlButton(text="CROUCH")
         btn_c.bind(on_press=lambda i: setattr(self.engine, 'is_crouching', True))
         btn_c.bind(on_release=lambda i: setattr(self.engine, 'is_crouching', False))
@@ -1739,18 +1739,18 @@ class MarioGameApp(App):
     def toggle_pause(self, instance):
         self.engine.is_paused = not self.engine.is_paused
         if self.engine.is_paused:
-            content = BoxLayout(orientation='vertical', padding=15, spacing=10)
-            lbl = Label(text="Dont quit now buddy", font_size='18sp', bold=True)
-            btn_resume = StylizedMenuButton(text="RESUME")
-            btn_retry = StylizedMenuButton(text="RETRY")
-            btn_menu = StylizedMenuButton(text="MAIN MENU")
+            content = BoxLayout(orientation='vertical', padding=25, spacing=18)
+            lbl = Label(text="Dont quit now buddy", font_size='22sp', bold=True)
+            btn_resume = StylizedMenuButton(text="RESUME", size_hint=(1, None), height=60)
+            btn_retry = StylizedMenuButton(text="RETRY", size_hint=(1, None), height=60)
+            btn_menu = StylizedMenuButton(text="MAIN MENU", size_hint=(1, None), height=60)
 
             content.add_widget(lbl)
             content.add_widget(btn_resume)
             content.add_widget(btn_retry)
             content.add_widget(btn_menu)
 
-            popup = Popup(title="Game Paused", content=content, size_hint=(None, None), size=(320, 280), auto_dismiss=False)
+            popup = Popup(title="Game Paused", content=content, size_hint=(None, None), size=(420, 360), auto_dismiss=False)
             btn_resume.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss(), setattr(self.engine, 'is_paused', False)))
             btn_retry.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss(), self.clear_polyester_videos(), self.load_level(self.engine.level)))
             btn_menu.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss(), self.clear_polyester_videos(), self.show_main_menu()))
@@ -1811,15 +1811,15 @@ class MarioGameApp(App):
 
         def show_you_are_died_popup():
             self.root_layout.clear_widgets()
-            content = BoxLayout(orientation='vertical', padding=20, spacing=20)
+            content = BoxLayout(orientation='vertical', padding=25, spacing=25)
             
-            lbl_died = Label(text="You are Died", font_size='26sp', bold=True, color=(1, 0.2, 0.2, 1), halign='center')
+            lbl_died = Label(text="You are Died", font_size='32sp', bold=True, color=(1, 0.2, 0.2, 1), halign='center')
             content.add_widget(lbl_died)
 
-            btn_retry = StylizedMenuButton(text="RETRY LEVEL")
+            btn_retry = StylizedMenuButton(text="RETRY LEVEL", size_hint=(1, None), height=65)
             content.add_widget(btn_retry)
 
-            popup = Popup(title="Game Over", content=content, size_hint=(None, None), size=(320, 220), auto_dismiss=False)
+            popup = Popup(title="Game Over", content=content, size_hint=(None, None), size=(420, 280), auto_dismiss=False)
             
             def do_retry(instance):
                 SoundManager.play_click()
@@ -1844,19 +1844,19 @@ class MarioGameApp(App):
         SoundManager.stop_bgm()
         self.clear_polyester_videos()
         
-        content = BoxLayout(orientation='vertical', padding=15, spacing=15)
+        content = BoxLayout(orientation='vertical', padding=25, spacing=20)
         
         if os.path.exists(asset_path("question.png")):
-            img = Image(source=asset_path("question.png"), size_hint=(None, None), size=(120, 120), pos_hint={'center_x': 0.5})
+            img = Image(source=asset_path("question.png"), size_hint=(None, None), size=(150, 150), pos_hint={'center_x': 0.5})
             content.add_widget(img)
         
-        lbl = Label(text="how you gon die to the void yo", font_size='16sp', bold=True, color=(1, 0.3, 0.3, 1), halign='center')
+        lbl = Label(text="how you gon die to the void yo", font_size='22sp', bold=True, color=(1, 0.3, 0.3, 1), halign='center')
         content.add_widget(lbl)
 
-        btn_retry = StylizedMenuButton(text="retry level")
+        btn_retry = StylizedMenuButton(text="retry level", size_hint=(1, None), height=60)
         content.add_widget(btn_retry)
 
-        popup = Popup(title="Void Death", content=content, size_hint=(None, None), size=(340, 280), auto_dismiss=False)
+        popup = Popup(title="Void Death", content=content, size_hint=(None, None), size=(460, 360), auto_dismiss=False)
         
         def do_retry(instance):
             SoundManager.play_click()
@@ -1869,22 +1869,22 @@ class MarioGameApp(App):
 
     def show_pipe_dide_popup(self, is_pipe=False):
         SoundManager.stop_bgm()
-        content = BoxLayout(orientation='vertical', padding=15, spacing=15)
+        content = BoxLayout(orientation='vertical', padding=25, spacing=20)
         
         if is_pipe:
-            lbl = Label(text="you dide", font_size='22sp', bold=True, color=(1, 0.2, 0.2, 1))
+            lbl = Label(text="you dide", font_size='28sp', bold=True, color=(1, 0.2, 0.2, 1))
             content.add_widget(lbl)
 
-        btn_retry = StylizedMenuButton(text="RETRY LEVEL")
-        btn_menu = StylizedMenuButton(text="MAIN MENU")
+        btn_retry = StylizedMenuButton(text="RETRY LEVEL", size_hint=(1, None), height=60)
+        btn_menu = StylizedMenuButton(text="MAIN MENU", size_hint=(1, None), height=60)
 
         content.add_widget(btn_retry)
         content.add_widget(btn_menu)
 
         popup_title = "You Dide!" if is_pipe else "Game Over"
-        popup_height = 230 if is_pipe else 180
+        popup_height = 300 if is_pipe else 230
 
-        popup = Popup(title=popup_title, content=content, size_hint=(None, None), size=(300, popup_height), auto_dismiss=False)
+        popup = Popup(title=popup_title, content=content, size_hint=(None, None), size=(420, popup_height), auto_dismiss=False)
         
         def close_and_cleanup(instance, *args):
             self.clear_polyester_videos()
@@ -1903,23 +1903,23 @@ class MarioGameApp(App):
         if lvl + 1 > self.max_unlocked_level:
             self.max_unlocked_level = lvl + 1
 
-        content = BoxLayout(orientation='vertical', padding=15, spacing=15)
+        content = BoxLayout(orientation='vertical', padding=25, spacing=20)
         
         if lvl == 5:
             if os.path.exists("notbad.png"):
-                img = Image(source="notbad.png", size_hint=(None, None), size=(180, 120), pos_hint={'center_x': 0.5})
+                img = Image(source="notbad.png", size_hint=(None, None), size=(220, 150), pos_hint={'center_x': 0.5})
                 content.add_widget(img)
             else:
-                fallback_lbl = Label(text="[Image: notbad.png]", font_size='14sp', color=(0.7, 0.7, 0.7, 1))
+                fallback_lbl = Label(text="[Image: notbad.png]", font_size='18sp', color=(0.7, 0.7, 0.7, 1))
                 content.add_widget(fallback_lbl)
 
-            lbl_msg = Label(text="Not bad kid, Not bad", font_size='18sp', bold=True, color=(1, 0.9, 0.2, 1))
+            lbl_msg = Label(text="Not bad kid, Not bad", font_size='24sp', bold=True, color=(1, 0.9, 0.2, 1))
             content.add_widget(lbl_msg)
 
-            btn_next = StylizedMenuButton(text="Next")
+            btn_next = StylizedMenuButton(text="Next", size_hint=(1, None), height=60)
             content.add_widget(btn_next)
 
-            popup = Popup(title="Congratulations!", content=content, size_hint=(None, None), size=(340, 320), auto_dismiss=False)
+            popup = Popup(title="Congratulations!", content=content, size_hint=(None, None), size=(440, 400), auto_dismiss=False)
             
             def on_next_pressed(instance):
                 SoundManager.play_click()
@@ -1929,36 +1929,36 @@ class MarioGameApp(App):
             btn_next.bind(on_press=on_next_pressed)
             popup.open()
         else:
-            lbl = Label(text=f"Level {lvl} Completed!", font_size='18sp', bold=True)
-            btn_next = StylizedMenuButton(text="NEXT LEVEL")
-            btn_menu = StylizedMenuButton(text="MAIN MENU")
+            lbl = Label(text=f"Level {lvl} Completed!", font_size='24sp', bold=True)
+            btn_next = StylizedMenuButton(text="NEXT LEVEL", size_hint=(1, None), height=60)
+            btn_menu = StylizedMenuButton(text="MAIN MENU", size_hint=(1, None), height=60)
 
             content.add_widget(lbl)
             content.add_widget(btn_next)
             content.add_widget(btn_menu)
 
-            popup = Popup(title="Stage Cleared", content=content, size_hint=(None, None), size=(300, 230), auto_dismiss=False)
+            popup = Popup(title="Stage Cleared", content=content, size_hint=(None, None), size=(420, 300), auto_dismiss=False)
             btn_next.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss(), self.load_level(min(5, lvl + 1))))
             btn_menu.bind(on_press=lambda i: (SoundManager.play_click(), popup.dismiss(), self.show_main_menu()))
             popup.open()
 
     def show_syri_thank_you_display(self):
-        content = BoxLayout(orientation='vertical', padding=15, spacing=15)
+        content = BoxLayout(orientation='vertical', padding=25, spacing=20)
         
         if os.path.exists(asset_path("syri.png")):
-            img_syri = Image(source=asset_path("syri.png"), size_hint=(None, None), size=(140, 140), pos_hint={'center_x': 0.5})
+            img_syri = Image(source=asset_path("syri.png"), size_hint=(None, None), size=(180, 180), pos_hint={'center_x': 0.5})
             content.add_widget(img_syri)
         else:
-            fallback_lbl = Label(text="[Image: syri.png]", font_size='14sp', color=(0.7, 0.7, 0.7, 1))
+            fallback_lbl = Label(text="[Image: syri.png]", font_size='18sp', color=(0.7, 0.7, 0.7, 1))
             content.add_widget(fallback_lbl)
 
-        lbl_thanks = Label(text="thank you for playing brolio", font_size='16sp', bold=True, color=(1, 1, 1, 1), halign='center')
+        lbl_thanks = Label(text="thank you for playing brolio", font_size='22sp', bold=True, color=(1, 1, 1, 1), halign='center')
         content.add_widget(lbl_thanks)
 
-        btn_quit = StylizedMenuButton(text="Quit game")
+        btn_quit = StylizedMenuButton(text="Quit game", size_hint=(1, None), height=60)
         content.add_widget(btn_quit)
 
-        popup = Popup(title="Thank You!", content=content, size_hint=(None, None), size=(340, 340), auto_dismiss=False)
+        popup = Popup(title="Thank You!", content=content, size_hint=(None, None), size=(440, 420), auto_dismiss=False)
         
         def handle_quit_button(instance):
             SoundManager.play_click()
