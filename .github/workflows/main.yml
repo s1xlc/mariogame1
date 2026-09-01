@@ -41,8 +41,8 @@ jobs:
 
       - name: Set Java 17
         run: |
-          echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> "$GITHUB_ENV"
-          echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> "$GITHUB_PATH"
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
+          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> "$GITHUB_PATH"
 
           java -version
           javac -version
