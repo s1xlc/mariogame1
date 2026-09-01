@@ -1,31 +1,59 @@
 [app]
 
-# (str) Title of your application
+# Application name
 title = Mario Game
 
-# (str) Package name
-package.name = mariogame1
+# Package name
+package.name = mariogame
 
-# (str) Package domain (needed for android packaging)
-package.domain = org.s1xlc
+# Package domain
+package.domain = org.mariogame
 
-# (list) Source files to include (let it empty to include all files)
-source.include_exts = py,png,jpg,kv,atlas
+# Version
+version = 0.1
 
-# (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
+# Source directory
+source.dir = .
+
+# Files included in the APK
+source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,mp3,wav,ogg,mp4
+
+# Python requirements
+# pyjnius is NOT needed by main.py
 requirements = python3,kivy
 
-# (str) Supported orientations
-orientation = portrait
+# Screen orientation
+orientation = landscape
 
-# (list) List of permissions
-#android.permissions = INTERNET
+# Internet permission
+android.permissions = INTERNET
+
+# Android API
+android.api = 33
+
+# Minimum Android API
+android.minapi = 21
+
+# Android NDK
+android.ndk = 25b
+
+# AndroidX
+android.androidx = True
+
+# CPU architectures
+android.archs = arm64-v8a,armeabi-v7a
+
 
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+# Logging
 log_level = 2
 
-# (int) Display warning instead of aborting when buildozer is run as root (0 = False, 1 = to be equivariant|2 = ignore)
-warn_on_root = 1
+# APK output directory
+bin_dir = bin
+
+# Accept Android SDK licenses
+android.accept_sdk_license = True
+
+# Allow dependency updates
+android.skip_update = False
