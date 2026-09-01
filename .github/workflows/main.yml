@@ -17,20 +17,20 @@ jobs:
       # CHECKOUT
       # -----------------------------------------------------------------------
 
-      - name: Checkout code
+      - name: Checkout project
         uses: actions/checkout@v4
 
       # -----------------------------------------------------------------------
       # HOST PYTHON
       # -----------------------------------------------------------------------
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
       # -----------------------------------------------------------------------
-      # SYSTEM DEPENDENCIES
+      # SYSTEM PACKAGES
       # -----------------------------------------------------------------------
 
       - name: Install system dependencies
@@ -54,10 +54,10 @@ jobs:
             libssl-dev
 
       # -----------------------------------------------------------------------
-      # JAVA
+      # JAVA 17
       # -----------------------------------------------------------------------
 
-      - name: Set Java 17
+      - name: Configure Java 17
         run: |
           if [ -d "/usr/lib/jvm/temurin-17-jdk-amd64" ]; then
             JAVA_HOME_PATH="/usr/lib/jvm/temurin-17-jdk-amd64"
@@ -72,12 +72,15 @@ jobs:
           javac -version
 
       # -----------------------------------------------------------------------
-      # PYTHON BUILD TOOLS
+      # PYTHON TOOLS
       # -----------------------------------------------------------------------
 
-      - name: Upgrade Python tools
+      - name: Install Python build tools
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade \
+            pip \
+            setuptools \
+            wheel
 
       # -----------------------------------------------------------------------
       # BUILDOZER
@@ -94,10 +97,10 @@ jobs:
           buildozer --version
 
       # -----------------------------------------------------------------------
-      # CHECK PROJECT
+      # VERIFY PROJECT
       # -----------------------------------------------------------------------
 
-      - name: Check project configuration
+      - name: Verify project
         run: |
           echo "========================================"
           echo "BUILDOZER REQUIREMENTS"
@@ -107,23 +110,48 @@ jobs:
 
           echo ""
           echo "========================================"
-          echo "ANDROID SETTINGS"
+          echo "P4A VERSION"
           echo "========================================"
 
-          grep "^android.api" buildozer.spec || true
-          grep "^android.minapi" buildozer.spec || true
-          grep "^android.ndk" buildozer.spec || true
-          grep "^android.archs" buildozer.spec || true
+          grep "^p4a.branch" buildozer.spec
+          grep "^p4a.commit" buildozer.spec
 
           echo ""
           echo "========================================"
-          echo "ASSET FILES"
+          echo "ANDROID"
+          echo "========================================"
+
+          grep "^android.api" buildozer.spec
+          grep "^android.minapi" buildozer.spec
+          grep "^android.ndk" buildozer.spec
+          grep "^android.archs" buildozer.spec
+
+          echo ""
+          echo "========================================"
+          echo "ORIGINAL ASSETS"
           echo "========================================"
 
           find .assets -maxdepth 1 -type f | sort
 
       # -----------------------------------------------------------------------
-      # CLEAN BUILD
+      # PREPARE ASSETS
+      # -----------------------------------------------------------------------
+
+      - name: Prepare Android assets
+        run: |
+          rm -rf android_assets
+          mkdir -p android_assets
+
+          cp -a .assets/. android_assets/
+
+          echo "========================================"
+          echo "PACKAGED ASSETS"
+          echo "========================================"
+
+          find android_assets -maxdepth 1 -type f | sort
+
+      # -----------------------------------------------------------------------
+      # CLEAN PREVIOUS BUILDS
       # -----------------------------------------------------------------------
 
       - name: Clean Buildozer
@@ -132,7 +160,7 @@ jobs:
           rm -rf bin
 
       # -----------------------------------------------------------------------
-      # BUILD APK
+      # BUILD
       # -----------------------------------------------------------------------
 
       - name: Build APK
@@ -140,10 +168,10 @@ jobs:
           yes | buildozer -v android debug
 
       # -----------------------------------------------------------------------
-      # SHOW RESULT
+      # SHOW APK
       # -----------------------------------------------------------------------
 
-      - name: Show APK
+      - name: Show APK output
         if: always()
         run: |
           echo "========================================"
@@ -153,7 +181,7 @@ jobs:
           if [ -d bin ]; then
             find bin -maxdepth 1 -type f -name "*.apk" -print
           else
-            echo "No bin directory was created."
+            echo "No APK output directory."
           fi
 
       # -----------------------------------------------------------------------
