@@ -17,23 +17,19 @@ version = 0.1
 
 source.dir = .
 
-# Include all game asset types.
+# Include all game assets.
 source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,mp3,wav,ogg,mp4
 
-# IMPORTANT:
-# Keep the .assets directory in the source tree.
-# main.py already resolves assets through .assets.
+# Keep the asset directory available to the application.
 source.exclude_dirs = .git,.github,.buildozer,bin
 
 # -----------------------------------------------------------------------------
-# PYTHON REQUIREMENTS
+# REQUIREMENTS
 # -----------------------------------------------------------------------------
 
-# pyjnius is NOT required by main.py.
-#
-# Explicitly pin Python so python-for-android does not select its newer
-# Python 3.14 toolchain.
-requirements = python3==3.12.10,kivy
+# DO NOT pin Python to 3.12 here.
+# python-for-android's hostpython3 and python3 must match.
+requirements = python3,kivy
 
 # -----------------------------------------------------------------------------
 # SCREEN
