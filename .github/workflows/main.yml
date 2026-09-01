@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
   workflow_dispatch:
 
 jobs:
@@ -11,18 +12,31 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+
+      # -----------------------------------------------------------------------
+      # CHECKOUT
+      # -----------------------------------------------------------------------
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # HOST PYTHON
+      # -----------------------------------------------------------------------
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
+      # -----------------------------------------------------------------------
+      # SYSTEM DEPENDENCIES
+      # -----------------------------------------------------------------------
+
       - name: Install system dependencies
         run: |
-          sudo dpkg --add-architecture i386
           sudo apt-get update
+
           sudo apt-get install -y \
             git \
             zip \
@@ -37,55 +51,131 @@ jobs:
             libncursesw5-dev \
             cmake \
             libffi-dev \
-            libssl-dev \
-            libltdl-dev \
-            libstdc++6:i386 \
-            zlib1g:i386
+            libssl-dev
+
+      # -----------------------------------------------------------------------
+      # JAVA 17
+      # -----------------------------------------------------------------------
 
       - name: Set Java 17
         run: |
-          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
-          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> "$GITHUB_PATH"
+          JAVA_HOME_PATH="/usr/lib/jvm/temurin-17-jdk-amd64"
+
+          if [ ! -d "$JAVA_HOME_PATH" ]; then
+            JAVA_HOME_PATH="/usr/lib/jvm/java-17-openjdk-amd64"
+          fi
+
+          echo "JAVA_HOME=$JAVA_HOME_PATH" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_PATH/bin" >> "$GITHUB_PATH"
+
           java -version
           javac -version
 
-      - name: Upgrade Python build tools and pin Cython
+      # -----------------------------------------------------------------------
+      # PYTHON BUILD TOOLS
+      # -----------------------------------------------------------------------
+
+      - name: Upgrade Python build tools
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "cython==0.29.36"
+          python -m pip install --upgrade \
+            pip \
+            setuptools \
+            wheel
+
+      # -----------------------------------------------------------------------
+      # BUILDozer
+      # -----------------------------------------------------------------------
 
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade buildozer
 
-      - name: Verify build environment
+      - name: Verify Buildozer
         run: |
           python --version
           pip --version
           buildozer --version
 
-      - name: Check project files
+      # -----------------------------------------------------------------------
+      # VERIFY PROJECT
+      # -----------------------------------------------------------------------
+
+      - name: Verify project files
         run: |
-          echo "=== Project files ==="
-          find . -maxdepth 2 -type f | sort
+          echo "========================================"
+          echo "PROJECT FILES"
+          echo "========================================"
 
-          echo "=== Buildozer requirements ==="
-          grep "^requirements" buildozer.spec || true
+          find . -maxdepth 2 -type f \
+            ! -path "./.git/*" \
+            ! -path "./.buildozer/*" \
+            | sort
 
-      - name: Clean old Buildozer files
+          echo ""
+          echo "========================================"
+          echo "BUILDOZER REQUIREMENTS"
+          echo "========================================"
+
+          grep "^requirements" buildozer.spec
+
+          echo ""
+          echo "========================================"
+          echo "ANDROID SETTINGS"
+          echo "========================================"
+
+          grep "^android.api" buildozer.spec || true
+          grep "^android.minapi" buildozer.spec || true
+          grep "^android.ndk" buildozer.spec || true
+          grep "^android.archs" buildozer.spec || true
+
+          echo ""
+          echo "========================================"
+          echo "ASSETS"
+          echo "========================================"
+
+          find .assets -maxdepth 1 -type f | sort
+
+      # -----------------------------------------------------------------------
+      # CLEAN EVERYTHING FROM PREVIOUS BUILDS
+      # -----------------------------------------------------------------------
+
+      - name: Clean Buildozer
         run: |
           rm -rf .buildozer
           rm -rf bin
 
+      # -----------------------------------------------------------------------
+      # BUILD
+      # -----------------------------------------------------------------------
+
       - name: Build APK
+        env:
+          # Do not allow interactive prerequisite questions.
+          PYTHONFORANDROID_PREREQUISITES_INSTALL_INTERACTIVE: "0"
+
         run: |
           yes | buildozer -v android debug
 
-      - name: Show APK files
+      # -----------------------------------------------------------------------
+      # SHOW APK
+      # -----------------------------------------------------------------------
+
+      - name: Show APK output
         if: always()
         run: |
-          echo "=== APK output ==="
-          find bin -maxdepth 1 -type f -name "*.apk" -print 2>/dev/null || true
+          echo "========================================"
+          echo "APK FILES"
+          echo "========================================"
+
+          if [ -d bin ]; then
+            find bin -maxdepth 1 -type f -name "*.apk" -print
+          else
+            echo "bin directory does not exist."
+          fi
+
+      # -----------------------------------------------------------------------
+      # UPLOAD APK
+      # -----------------------------------------------------------------------
 
       - name: Upload APK
         if: success()
