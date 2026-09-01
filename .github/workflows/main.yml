@@ -54,14 +54,14 @@ jobs:
             libssl-dev
 
       # -----------------------------------------------------------------------
-      # JAVA 17
+      # JAVA
       # -----------------------------------------------------------------------
 
       - name: Set Java 17
         run: |
-          JAVA_HOME_PATH="/usr/lib/jvm/temurin-17-jdk-amd64"
-
-          if [ ! -d "$JAVA_HOME_PATH" ]; then
+          if [ -d "/usr/lib/jvm/temurin-17-jdk-amd64" ]; then
+            JAVA_HOME_PATH="/usr/lib/jvm/temurin-17-jdk-amd64"
+          else
             JAVA_HOME_PATH="/usr/lib/jvm/java-17-openjdk-amd64"
           fi
 
@@ -75,15 +75,12 @@ jobs:
       # PYTHON BUILD TOOLS
       # -----------------------------------------------------------------------
 
-      - name: Upgrade Python build tools
+      - name: Upgrade Python tools
         run: |
-          python -m pip install --upgrade \
-            pip \
-            setuptools \
-            wheel
+          python -m pip install --upgrade pip setuptools wheel
 
       # -----------------------------------------------------------------------
-      # BUILDozer
+      # BUILDOZER
       # -----------------------------------------------------------------------
 
       - name: Install Buildozer
@@ -97,21 +94,11 @@ jobs:
           buildozer --version
 
       # -----------------------------------------------------------------------
-      # VERIFY PROJECT
+      # CHECK PROJECT
       # -----------------------------------------------------------------------
 
-      - name: Verify project files
+      - name: Check project configuration
         run: |
-          echo "========================================"
-          echo "PROJECT FILES"
-          echo "========================================"
-
-          find . -maxdepth 2 -type f \
-            ! -path "./.git/*" \
-            ! -path "./.buildozer/*" \
-            | sort
-
-          echo ""
           echo "========================================"
           echo "BUILDOZER REQUIREMENTS"
           echo "========================================"
@@ -130,13 +117,13 @@ jobs:
 
           echo ""
           echo "========================================"
-          echo "ASSETS"
+          echo "ASSET FILES"
           echo "========================================"
 
           find .assets -maxdepth 1 -type f | sort
 
       # -----------------------------------------------------------------------
-      # CLEAN EVERYTHING FROM PREVIOUS BUILDS
+      # CLEAN BUILD
       # -----------------------------------------------------------------------
 
       - name: Clean Buildozer
@@ -145,32 +132,28 @@ jobs:
           rm -rf bin
 
       # -----------------------------------------------------------------------
-      # BUILD
+      # BUILD APK
       # -----------------------------------------------------------------------
 
       - name: Build APK
-        env:
-          # Do not allow interactive prerequisite questions.
-          PYTHONFORANDROID_PREREQUISITES_INSTALL_INTERACTIVE: "0"
-
         run: |
           yes | buildozer -v android debug
 
       # -----------------------------------------------------------------------
-      # SHOW APK
+      # SHOW RESULT
       # -----------------------------------------------------------------------
 
-      - name: Show APK output
+      - name: Show APK
         if: always()
         run: |
           echo "========================================"
-          echo "APK FILES"
+          echo "APK OUTPUT"
           echo "========================================"
 
           if [ -d bin ]; then
             find bin -maxdepth 1 -type f -name "*.apk" -print
           else
-            echo "bin directory does not exist."
+            echo "No bin directory was created."
           fi
 
       # -----------------------------------------------------------------------
