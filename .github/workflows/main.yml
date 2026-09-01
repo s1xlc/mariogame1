@@ -13,25 +13,25 @@ jobs:
 
     steps:
 
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
       # CHECKOUT
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Checkout project
         uses: actions/checkout@v4
 
-      # -----------------------------------------------------------------------
-      # HOST PYTHON
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # PYTHON
+      # ------------------------------------------------------------
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      # -----------------------------------------------------------------------
-      # SYSTEM PACKAGES
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # SYSTEM DEPENDENCIES
+      # ------------------------------------------------------------
 
       - name: Install system dependencies
         run: |
@@ -53,9 +53,9 @@ jobs:
             libffi-dev \
             libssl-dev
 
-      # -----------------------------------------------------------------------
-      # JAVA 17
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # JAVA
+      # ------------------------------------------------------------
 
       - name: Configure Java 17
         run: |
@@ -71,20 +71,20 @@ jobs:
           java -version
           javac -version
 
-      # -----------------------------------------------------------------------
-      # PYTHON TOOLS
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # PYTHON BUILD TOOLS
+      # ------------------------------------------------------------
 
-      - name: Install Python build tools
+      - name: Install Python tools
         run: |
           python -m pip install --upgrade \
             pip \
             setuptools \
             wheel
 
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
       # BUILDOZER
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Install Buildozer
         run: |
@@ -96,80 +96,102 @@ jobs:
           pip --version
           buildozer --version
 
-      # -----------------------------------------------------------------------
-      # VERIFY PROJECT
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # VERIFY ORIGINAL ASSETS
+      # ------------------------------------------------------------
 
-      - name: Verify project
+      - name: Verify original assets
         run: |
           echo "========================================"
-          echo "BUILDOZER REQUIREMENTS"
-          echo "========================================"
-
-          grep "^requirements" buildozer.spec
-
-          echo ""
-          echo "========================================"
-          echo "P4A VERSION"
-          echo "========================================"
-
-          grep "^p4a.branch" buildozer.spec
-          grep "^p4a.commit" buildozer.spec
-
-          echo ""
-          echo "========================================"
-          echo "ANDROID"
-          echo "========================================"
-
-          grep "^android.api" buildozer.spec
-          grep "^android.minapi" buildozer.spec
-          grep "^android.ndk" buildozer.spec
-          grep "^android.archs" buildozer.spec
-
-          echo ""
-          echo "========================================"
-          echo "ORIGINAL ASSETS"
+          echo "ORIGINAL .assets CONTENT"
           echo "========================================"
 
           find .assets -maxdepth 1 -type f | sort
 
-      # -----------------------------------------------------------------------
-      # PREPARE ASSETS
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # COPY ASSETS TO APP ROOT
+      # ------------------------------------------------------------
 
-      - name: Prepare Android assets
+      - name: Prepare game assets
         run: |
-          rm -rf android_assets
-          mkdir -p android_assets
-
-          cp -a .assets/. android_assets/
-
           echo "========================================"
-          echo "PACKAGED ASSETS"
+          echo "COPYING GAME ASSETS"
           echo "========================================"
 
-          find android_assets -maxdepth 1 -type f | sort
+          # Copy the ORIGINAL files from .assets into the same directory
+          # as main.py.
+          #
+          # This matches the paths used by main.py:
+          # mario.png
+          # mushroom.png
+          # turtle.png
+          # 5boss.png
+          # background.jpg
+          # bgmusic.mp3
+          # etc.
 
-      # -----------------------------------------------------------------------
-      # CLEAN PREVIOUS BUILDS
-      # -----------------------------------------------------------------------
+          cp -a .assets/. .
+
+          echo ""
+          echo "========================================"
+          echo "ROOT ASSETS AFTER COPY"
+          echo "========================================"
+
+          ls -lah \
+            mario.png \
+            mariocrouch.png \
+            mushroom.png \
+            turtle.png \
+            5boss.png \
+            background.jpg \
+            bgmusic.mp3
+
+          echo ""
+          echo "========================================"
+          echo "SOUND FILES"
+          echo "========================================"
+
+          ls -lah *.wav *.mp3 2>/dev/null || true
+
+      # ------------------------------------------------------------
+      # VERIFY CRITICAL FILES
+      # ------------------------------------------------------------
+
+      - name: Verify critical game files
+        run: |
+          set -e
+
+          test -f main.py
+          test -f mario.png
+          test -f mariocrouch.png
+          test -f mushroom.png
+          test -f turtle.png
+          test -f 5boss.png
+          test -f background.jpg
+          test -f bgmusic.mp3
+
+          echo "All critical Mario Game assets are present."
+
+      # ------------------------------------------------------------
+      # CLEAN PREVIOUS BUILD
+      # ------------------------------------------------------------
 
       - name: Clean Buildozer
         run: |
           rm -rf .buildozer
           rm -rf bin
 
-      # -----------------------------------------------------------------------
-      # BUILD
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # BUILD APK
+      # ------------------------------------------------------------
 
       - name: Build APK
         run: |
           yes | buildozer -v android debug
 
-      # -----------------------------------------------------------------------
-      # SHOW APK
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
+      # CHECK APK
+      # ------------------------------------------------------------
 
       - name: Show APK output
         if: always()
@@ -181,12 +203,12 @@ jobs:
           if [ -d bin ]; then
             find bin -maxdepth 1 -type f -name "*.apk" -print
           else
-            echo "No APK output directory."
+            echo "No bin directory found."
           fi
 
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
       # UPLOAD APK
-      # -----------------------------------------------------------------------
+      # ------------------------------------------------------------
 
       - name: Upload APK
         if: success()
