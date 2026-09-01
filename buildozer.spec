@@ -17,18 +17,14 @@ version = 0.1
 
 source.dir = .
 
-# Include all game assets.
 source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,mp3,wav,ogg,mp4
 
-# Keep the asset directory available to the application.
-source.exclude_dirs = .git,.github,.buildozer,bin
+source.exclude_dirs = .git,.github,.buildozer,bin,.assets,android_assets
 
 # -----------------------------------------------------------------------------
 # REQUIREMENTS
 # -----------------------------------------------------------------------------
 
-# DO NOT pin Python to 3.12 here.
-# python-for-android's hostpython3 and python3 must match.
 requirements = python3,kivy
 
 # -----------------------------------------------------------------------------
@@ -51,6 +47,17 @@ android.ndk = 25b
 android.archs = arm64-v8a,armeabi-v7a
 
 android.androidx = True
+
+# -----------------------------------------------------------------------------
+# PYTHON-FOR-ANDROID
+# -----------------------------------------------------------------------------
+
+# Pin to the verified pre-Python-3.14 p4a release.
+p4a.branch = v2024.01.21
+p4a.commit = 957a3e5
+
+# Use the SDL2 bootstrap required by Kivy.
+p4a.bootstrap = sdl2
 
 # -----------------------------------------------------------------------------
 # BUILD
