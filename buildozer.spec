@@ -1,59 +1,71 @@
 [app]
 
-# Application name
+# -----------------------------------------------------------------------------
+# APPLICATION
+# -----------------------------------------------------------------------------
+
 title = Mario Game
 
-# Package name
 package.name = mariogame
-
-# Package domain
 package.domain = org.mariogame
 
-# Version
 version = 0.1
 
-# Source directory
+# -----------------------------------------------------------------------------
+# SOURCE
+# -----------------------------------------------------------------------------
+
 source.dir = .
 
-# Files included in the APK
+# Include all game asset types.
 source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,mp3,wav,ogg,mp4
 
-# Python requirements
-# pyjnius is NOT needed by main.py
-requirements = python3,kivy
+# IMPORTANT:
+# Keep the .assets directory in the source tree.
+# main.py already resolves assets through .assets.
+source.exclude_dirs = .git,.github,.buildozer,bin
 
-# Screen orientation
+# -----------------------------------------------------------------------------
+# PYTHON REQUIREMENTS
+# -----------------------------------------------------------------------------
+
+# pyjnius is NOT required by main.py.
+#
+# Explicitly pin Python so python-for-android does not select its newer
+# Python 3.14 toolchain.
+requirements = python3==3.12.10,kivy
+
+# -----------------------------------------------------------------------------
+# SCREEN
+# -----------------------------------------------------------------------------
+
 orientation = landscape
+fullscreen = 1
 
-# Internet permission
+# -----------------------------------------------------------------------------
+# ANDROID
+# -----------------------------------------------------------------------------
+
 android.permissions = INTERNET
 
-# Android API
 android.api = 33
-
-# Minimum Android API
 android.minapi = 21
-
-# Android NDK
 android.ndk = 25b
 
-# AndroidX
-android.androidx = True
-
-# CPU architectures
 android.archs = arm64-v8a,armeabi-v7a
 
+android.androidx = True
+
+# -----------------------------------------------------------------------------
+# BUILD
+# -----------------------------------------------------------------------------
 
 [buildozer]
 
-# Logging
 log_level = 2
 
-# APK output directory
 bin_dir = bin
 
-# Accept Android SDK licenses
 android.accept_sdk_license = True
 
-# Allow dependency updates
 android.skip_update = False
